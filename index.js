@@ -127,8 +127,21 @@ const translations = {
         error_email: "الرجاء إدخال بريد إلكتروني صحيح",
         error_subject: "الرجاء إدخال عنوان للرسالة",
         error_message: "الرجاء كتابة رسالتك هنا",
-        sending_status: "جاري إرسال الرسالة...",
-        send_success: "تم إرسال رسالتك بنجاح! شكراً لتواصلك مع المهندس محمد."
+        sending_status: "جاري تحويلك للإرسال...",
+        send_success: "تم تجهيز الرسالة وفتح تطبيق الاتصال بنجاح!",
+        nav_certificates: "الشهادات",
+        certificates_subtitle: "الاعتمادات المهنية",
+        certificates_title: "شهادات الخبرة والتدريب",
+        cert_1_title: "شهادة خبرة وتوصية",
+        cert_1_org: "الهيئة الوطنية للإبداع والتميز (NCA)",
+        cert_2_title: "شهادة تقدير وتدريب Laravel",
+        cert_2_org: "معهد منارات للتدريب والتأهيل",
+        cert_3_title: "شهادة شكر وتقدير",
+        cert_3_org: "معهد منارات للتدريب والتأهيل",
+        cert_4_title: "شهادة مشاركة في التحكيم",
+        cert_4_org: "مركز العدل والإحسان للتحكيم الدولي",
+        btn_submit_whatsapp: "إرسال عبر واتساب",
+        btn_submit_email: "إرسال عبر البريد"
     },
     en: {
         nav_home: "Home",
@@ -251,8 +264,21 @@ const translations = {
         error_email: "Please enter a valid email address",
         error_subject: "Please enter a message subject",
         error_message: "Please write your message here",
-        sending_status: "Sending message...",
-        send_success: "Your message was sent successfully! Thank you for contacting Mohamed."
+        sending_status: "Redirecting to app...",
+        send_success: "Message prepared and chat client opened successfully!",
+        nav_certificates: "Certificates",
+        certificates_subtitle: "Professional Credentials",
+        certificates_title: "Certificates of Experience & Training",
+        cert_1_title: "Experience Certificate & Recommendation",
+        cert_1_org: "National Creativity Authority (NCA)",
+        cert_2_title: "Laravel Training & Appreciation Certificate",
+        cert_2_org: "Manarat Training & Qualification Institute",
+        cert_3_title: "Certificate of Thanks & Appreciation",
+        cert_3_org: "Manarat Training & Qualification Institute",
+        cert_4_title: "Certificate of Participation - Arbitration",
+        cert_4_org: "Justice & Benevolence Center for Arbitration",
+        btn_submit_whatsapp: "Send via WhatsApp",
+        btn_submit_email: "Send via Email"
     }
 };
 
@@ -759,14 +785,49 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 11. Contact Form Handling & Validation
+    // Lightbox modal logic for Certificates
+    const certModal = document.getElementById('cert-modal');
+    const certModalImg = document.getElementById('cert-modal-img');
+    const certModalClose = document.getElementById('cert-modal-close');
+    const certModalBackdrop = document.getElementById('cert-modal-backdrop');
+    const certCards = document.querySelectorAll('.certificate-card');
+
+    if (certCards && certModal && certModalImg) {
+        certCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const src = card.getAttribute('data-cert-src');
+                certModalImg.src = src;
+                certModal.classList.add('active');
+                certModal.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+            });
+        });
+
+        function closeCertModal() {
+            certModal.classList.remove('active');
+            certModal.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = 'auto';
+        }
+
+        if (certModalClose) certModalClose.addEventListener('click', closeCertModal);
+        if (certModalBackdrop) certModalBackdrop.addEventListener('click', closeCertModal);
+        
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && certModal.classList.contains('active')) {
+                closeCertModal();
+            }
+        });
+    }
+
+    // 11. Contact Form Handling & Validation with Direct Actions
     const contactForm = document.getElementById('contact-form');
     const formStatus = document.getElementById('form-status');
+    const submitWhatsappBtn = document.getElementById('submit-whatsapp-btn');
+    const submitEmailBtn = document.getElementById('submit-email-btn');
 
-    if (contactForm) {
-        contactForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
+    if (contactForm && submitWhatsappBtn && submitEmailBtn) {
+        
+        const validateForm = () => {
             const nameInput = document.getElementById('name');
             const emailInput = document.getElementById('email');
             const subjectInput = document.getElementById('subject');
@@ -822,23 +883,69 @@ document.addEventListener('DOMContentLoaded', () => {
                 setValid(messageInput);
             }
 
+            return {
+                isValid,
+                data: {
+                    name: nameInput.value.trim(),
+                    email: emailInput.value.trim(),
+                    subject: subjectInput.value.trim(),
+                    message: messageInput.value.trim()
+                }
+            };
+        };
+
+        // Submit to WhatsApp Click Handler
+        submitWhatsappBtn.addEventListener('click', () => {
+            const { isValid, data } = validateForm();
+            
             if (isValid) {
-                const submitBtn = contactForm.querySelector('.btn-submit');
-                const submitBtnTextSpan = submitBtn.querySelector('span');
-                const originalBtnContent = submitBtnTextSpan.textContent;
-                
-                submitBtn.disabled = true;
-                submitBtnTextSpan.textContent = translations[currentLang].sending_status;
+                const originalContent = submitWhatsappBtn.innerHTML;
+                submitWhatsappBtn.disabled = true;
+                submitWhatsappBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${translations[currentLang].sending_status}`;
+
+                // Formulate message
+                const messageText = currentLang === 'ar' 
+                    ? `مرحباً م. محمد فايز درويش،\n\nأنا: ${data.name}\nبريدي الإلكتروني: ${data.email}\nموضوع الرسالة: ${data.subject}\n\nنص الرسالة:\n${data.message}`
+                    : `Hello Eng. Mohamed Fayez Darwish,\n\nI am: ${data.name}\nEmail: ${data.email}\nSubject: ${data.subject}\n\nMessage:\n${data.message}`;
+
+                const whatsappUrl = `https://wa.me/963953339994?text=${encodeURIComponent(messageText)}`;
 
                 setTimeout(() => {
-                    submitBtn.disabled = false;
-                    submitBtnTextSpan.textContent = originalBtnContent;
-                    
+                    submitWhatsappBtn.disabled = false;
+                    submitWhatsappBtn.innerHTML = originalContent;
                     formStatus.textContent = translations[currentLang].send_success;
                     formStatus.classList.add('success');
                     
+                    window.open(whatsappUrl, '_blank');
                     contactForm.reset();
-                }, 1500);
+                }, 1000);
+            }
+        });
+
+        // Submit to Email Click Handler
+        submitEmailBtn.addEventListener('click', () => {
+            const { isValid, data } = validateForm();
+
+            if (isValid) {
+                const originalContent = submitEmailBtn.innerHTML;
+                submitEmailBtn.disabled = true;
+                submitEmailBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${translations[currentLang].sending_status}`;
+
+                const bodyText = currentLang === 'ar'
+                    ? `الاسم: ${data.name}\nالبريد الإلكتروني للراسل: ${data.email}\n\nالرسالة:\n${data.message}`
+                    : `Name: ${data.name}\nSender Email: ${data.email}\n\nMessage:\n${data.message}`;
+
+                const mailtoUrl = `mailto:Fayezdarwish2221@gmail.com?subject=${encodeURIComponent(data.subject)}&body=${encodeURIComponent(bodyText)}`;
+
+                setTimeout(() => {
+                    submitEmailBtn.disabled = false;
+                    submitEmailBtn.innerHTML = originalContent;
+                    formStatus.textContent = translations[currentLang].send_success;
+                    formStatus.classList.add('success');
+                    
+                    window.open(mailtoUrl, '_blank');
+                    contactForm.reset();
+                }, 1000);
             }
         });
 

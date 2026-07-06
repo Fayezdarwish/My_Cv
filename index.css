@@ -1704,7 +1704,126 @@ html[lang="en"] .contact-detail-card:hover {
     }
 }
 
+/* Certificates Section Styles */
+.certificates-section {
+    padding: 8rem 0;
+    background-color: var(--bg-dark);
+}
+
+.certificates-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+}
+
+.certificate-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.certificate-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(6, 182, 212, 0.25);
+    box-shadow: var(--shadow);
+}
+
+.cert-img-box {
+    position: relative;
+    height: 180px;
+    overflow: hidden;
+    background: #000;
+}
+
+.cert-img-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition);
+}
+
+.certificate-card:hover .cert-img-box img {
+    transform: scale(1.05);
+}
+
+.cert-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(2, 6, 23, 0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    color: #fff;
+    font-size: 1.5rem;
+    transition: var(--transition);
+}
+
+.certificate-card:hover .cert-overlay {
+    opacity: 1;
+}
+
+.cert-info {
+    padding: 1.25rem;
+}
+
+.cert-info h4 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.cert-info p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Lightbox Modal Animation helpers */
+.cert-modal.active {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.cert-modal.active .cert-modal-content {
+    transform: scale(1) !important;
+}
+
+/* WhatsApp and Email buttons custom styling */
+.btn-whatsapp {
+    background: #25d366 !important;
+    color: #fff !important;
+}
+.btn-whatsapp:hover {
+    background: #20ba5a !important;
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5) !important;
+}
+
+/* Responsive adjust for certificates */
+@media (max-width: 1024px) {
+    .certificates-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .certificates-section {
+        padding: 6rem 0;
+    }
+}
+
 @media (max-width: 576px) {
+    .certificates-grid {
+        grid-template-columns: 1fr;
+    }
+    
     .portfolio-grid {
         grid-template-columns: 1fr;
     }
@@ -1716,5 +1835,9 @@ html[lang="en"] .contact-detail-card:hover {
     
     .hero-actions .btn {
         width: 100%;
+    }
+    
+    .form-actions-flex {
+        flex-direction: column;
     }
 }
